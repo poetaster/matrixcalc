@@ -7,7 +7,7 @@ Page {
     property var elem
     property var border
     property var rootLine
-    property bool debug: true
+    property bool debug: false
     id: page
 
     //backNavigation: false
