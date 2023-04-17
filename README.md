@@ -1,2 +1,3 @@
 # matrixcalc
-https://openrepos.net/content/fruct/matrix-calculatorA plotting scientific calculator, originally from 
+A plotting scientific calculator, originally from 
+https://openrepos.net/content/fruct/matrix-calculator
