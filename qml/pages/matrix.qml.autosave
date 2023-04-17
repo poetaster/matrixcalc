@@ -1,0 +1,140 @@
+import QtQuick 2.0
+//import QtQuick.Controls 2.0
+import Sailfish.Silica 1.0
+import QtQml 2.2
+import "GlobalVariables.js" as GlobalVariables
+
+
+Page {
+    id: page
+    height: column.height
+    allowedOrientations: Orientation.All
+
+    SilicaFlickable {
+        anchors.fill: parent
+        contentHeight: column.height
+        VerticalScrollDecorator {}
+
+        Column {
+            id: column
+            width: parent.width
+            spacing: Theme.paddingLarge
+            PageHeader {
+                title: qsTr("Ввод матрицы")
+            }
+
+            Item {
+                id: item
+                width: parent.width
+                height: canvas.height + Theme.itemSizeSmall
+                Canvas {
+                    id: canvas
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    y: 10
+                    width: page.width - 10
+                    height: canvas.width
+                    onPaint: {
+                        var ctx = canvas.getContext("2d");
+                        ctx.clearRect(0,0,canvas.width,canvas.height);
+                        ctx.fillStyle = "rgba(255,255,255,0.3)";
+                        ctx.fillRect(0, 0, width, height);
+                        var rows = GlobalVariables.rows;
+                        var columns = GlobalVariables.columns;
+                        var matrix = GlobalVariables.matrix;
+                        var i = 0;
+                        var column = canvas.width/columns;
+                        var row = canvas.width/rows;
+                        var column_i = 10;
+                        var row_i = row/2;
+                        for(i=0; i < columns; i++){
+                            for(var j = 0; j < rows; j++)
+                            {
+                                if (Number(String(matrix[i][j]).length) >= 4){
+                                    ctx.fillStyle = "black";
+                                    ctx.font = 'italic 15px sans-serif';
+                                    ctx.fillText("..", column_i, row_i);
+                                    column_i += column;
+                                }
+                                else {
+                                    ctx.fillStyle = "black";
+                                    ctx.font = 'italic 15px sans-serif';
+                                    ctx.fillText(matrix[i][j], column_i, row_i);
+                                    column_i += column;
+                                }
+                            }
+                            row_i += row;
+                            column_i = 10;
+                        }
+                    }
+                }
+            }
+            Row{
+                anchors.horizontalCenter: parent.horizontalCenter
+                TextField{
+                    id : columnsValue
+                    objectName: "columnsValue"
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    label: "Столбец"
+                    text: String(GlobalVariables.columns)
+                    //validator: IntValidator { bottom:0; top: 10;}
+                    //focus: true
+                    placeholderText : label
+                    width : 200
+                    EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                    EnterKey.onClicked: {
+                        if(columnsValue.text > GlobalVariables.columns)
+                            columnsValue.text = qsTr('')
+                        else{
+                            var rows = rowsValue.text-1;
+                            var columns = columnsValue.text-1;
+                            cellValue.focus = true
+                            cellValue.text = qsTr(String(GlobalVariables.matrix[rows][columns]))
+                        }
+                    }
+                }
+                TextField{
+                    id : rowsValue
+                    objectName: "rowsValue"
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    label: "Строка"
+                    //validator: IntValidator { bottom:0; top: 10;}
+                    //focus: true
+                    placeholderText : label
+                    width : 200
+                    EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                    EnterKey.onClicked: {
+                        if(rowsValue.text > GlobalVariables.rows)
+                            rowsValue.text = qsTr('')
+                        else
+                            columnsValue.focus = true
+                    }
+                }
+            }
+            TextField{
+                id : cellValue
+                objectName: "cellValue"
+                inputMethodHints: Qt.ImhDigitsOnly
+                label: "Значение элемента"
+                placeholderText : label
+                width : 500
+                EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                EnterKey.onClicked: {
+                    var rows = Number(rowsValue.text-1);
+                    var columns = Number(columnsValue.text-1);
+                    GlobalVariables.matrix[rows][columns] = Number(cellValue.text);
+                    canvas.requestPaint();
+                    columnsValue.text = qsTr('')
+                    rowsValue.text = qsTr('')
+                    cellValue.text = qsTr('')
+                    rowsValue.focus = true
+                }
+            }
+            Button {
+                id: buttonCount
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Посчитать"
+                onClicked:{}
+            }
+        }
+    }
+}
